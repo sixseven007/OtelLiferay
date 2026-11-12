@@ -1,0 +1,44 @@
+# docker-compose.yml
+services:
+  # Liferay (simulación del entorno principal)
+  liferay:
+    image: liferay/portal:7.4.3.112-ga112
+    ports:
+      - "8080:8080"
+    networks:
+      - telemetry-net
+
+  # OpenTelemetry Collector optimizado (contrib)
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:latest
+    command: ["--config=/etc/otelcol-contrib/config.yaml"]
+    environment:
+      - DT_ENDPOINT=${DT_ENDPOINT}
+      - DT_API_TOKEN=${DT_API_TOKEN}
+    volumes:
+      - ./otel-collector-config.yaml:/etc/otelcol-contrib/config.yaml
+    ports:
+      - "4317:4317"   # OTLP gRPC
+      - "4318:4318"   # OTLP HTTP
+    networks:
+      - telemetry-net
+
+  # Aplicación Node.js 22 instrumentada
+  node-app:
+    image: node:22-alpine
+    working_dir: /usr/src/app
+    volumes:
+      - .:/usr/src/app
+    environment:
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318
+    command: sh -c "npm install && node --require ./instrumentation.js app.js"
+    ports:
+      - "3000:3000"
+    depends_on:
+      - otel-collector
+    networks:
+      - telemetry-net
+
+networks:
+  telemetry-net:
+    driver: bridge

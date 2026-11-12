@@ -1,0 +1,23 @@
+{
+  "name": "otelliferay",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@opentelemetry/auto-instrumentations-node": "^0.83.0",
+    "@opentelemetry/exporter-logs-otlp-proto": "^0.301.1",
+    "@opentelemetry/exporter-trace-otlp-proto": "^0.301.1",
+    "@opentelemetry/sdk-logs": "^3.1.1",
+    "@opentelemetry/sdk-node": "^0.301.1",
+    "@opentelemetry/winston-transport": "^0.35.0",
+    "express": "^5.3.0",
+    "winston": "^3.19.0"
+  }
+}
